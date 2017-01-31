@@ -1,28 +1,23 @@
-import bintray.Keys._
 
 sbtPlugin := true
 
-organization := "org.neolin.sbt"
+organization := "org.github.ngbinh"
 
 name := "sbt-simple-url-update"
 
-version := "1.0.1"
+version := "1.0.2"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.10.6"
 
 resolvers += Classpaths.sbtPluginSnapshots
 
-bintrayPublishSettings
-
-repository in bintray := "sbt-plugins"
-
 bintrayOrganization in bintray := None
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.0.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.0")
 
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
-publishMavenStyle := false 
+publishMavenStyle := false
 
 scriptedSettings
 

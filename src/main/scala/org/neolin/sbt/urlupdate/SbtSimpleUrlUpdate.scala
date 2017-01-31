@@ -13,7 +13,7 @@ import sbt.Task
 object Import {
 
   val simpleUrlUpdate = TaskKey[Pipeline.Stage]("simple-url-update", "Update assets url in static css or js files with in asset pipeline.")
-  
+
   object UrlUpdateKeys {
     val algorithms = SettingKey[Seq[String]]("digest-algorithms", "Types of checksum used in the digest pipeline to generate.")
   }
@@ -41,23 +41,23 @@ object SbtSimpleUrlUpdate extends AutoPlugin {
 
   private def updatePipeline(mappings: Seq[PathMapping], algorithm: String): String => String = {
     val reversePathMappings = mappings.map{ case (k, v) => (v, k) }.toMap
-    
-    def checksummedPath(path: String): String = {
-	  
+
+    def checksumedPath(path: String): String = {
+
       val pathFile = sbt.file(path)
       reversePathMappings.get(path + "." + algorithm) match {
         case Some(file) => (pathFile.getParentFile / (IO.read(file) + "-" + pathFile.getName)).getPath
         case None => path
       }
     }
-    val assetVersions = mappings.map{ 
-      case (file, path) => path.replaceAll("\\\\","/") -> checksummedPath(path).replaceAll("\\\\","/")
-    }.distinct.filterNot{ 
-      case (originalPath, newPath) => originalPath == newPath 
+    val assetVersions = mappings.map{
+      case (_, path) => (path.replaceAll("\\\\","/") + "\\b") -> checksumedPath(path).replaceAll("\\\\","/")
+    }.distinct.filterNot{
+      case (originalPath, newPath) => originalPath == newPath
     }
 
     Function.chain(
-      assetVersions.map{ 
+      assetVersions.map{
         case (originalPath, newPath) => (content: String) => content.replaceAll(originalPath, newPath)
       }
     )
@@ -68,9 +68,10 @@ object SbtSimpleUrlUpdate extends AutoPlugin {
       val targetDir = webTarget.value / simpleUrlUpdate.key.label
       val include = (includeFilter in simpleUrlUpdate).value
       val exclude = (excludeFilter in simpleUrlUpdate).value
-      
+
       SbtWeb.syncMappings(
         streams.value.cacheDirectory,
+        simpleUrlUpdate.key.label,
         mappings,
         targetDir
       )
@@ -79,7 +80,7 @@ object SbtSimpleUrlUpdate extends AutoPlugin {
 
       for {
         algorithm <- algorithms.value
-        (file, path) <- updateMappings.filter(f => !f._1.isDirectory && include.accept(f._1) && !exclude.accept(f._1))
+        (file, _) <- updateMappings.filter(f => !f._1.isDirectory && include.accept(f._1) && !exclude.accept(f._1))
       } yield {
         IO.write(file, updatePipeline(updateMappings, algorithm)(IO.read(file)))
       }
