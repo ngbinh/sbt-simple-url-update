@@ -10,7 +10,7 @@ Add plugin
 Add the plugin to `project/plugins.sbt`. For example:
 
 ```scala
-addSbtPlugin("org.github.ngbinh" % "sbt-simple-url-update" % "1.0.0")
+addSbtPlugin("org.github.ngbinh" % "sbt-simple-url-update" % "1.0.4")
 ```
 
 Your project's build file also needs to enable sbt-web plugins. For example with build.sbt:
