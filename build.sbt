@@ -13,7 +13,7 @@ resolvers += Classpaths.sbtPluginSnapshots
 
 bintrayOrganization in bintray := None
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.3")
 
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 

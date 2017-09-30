@@ -70,8 +70,7 @@ object SbtSimpleUrlUpdate extends AutoPlugin {
       val exclude = (excludeFilter in simpleUrlUpdate).value
 
       SbtWeb.syncMappings(
-        streams.value.cacheDirectory,
-        simpleUrlUpdate.key.label,
+        streams.value.cacheDirectory / simpleUrlUpdate.key.label,
         mappings,
         targetDir
       )
