@@ -5,7 +5,7 @@ organization := "org.github.ngbinh"
 
 name := "sbt-simple-url-update"
 
-version := "1.0.2"
+version := "1.0.4"
 
 scalaVersion := "2.10.6"
 
