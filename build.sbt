@@ -7,18 +7,14 @@ name := "sbt-simple-url-update"
 
 version := "1.0.4"
 
-scalaVersion := "2.10.6"
+crossSbtVersions := Seq("0.13.16", "1.0.3")
 
-resolvers += Classpaths.sbtPluginSnapshots
+addSbtPlugin("com.typesafe.sbt" %% "sbt-web" % "1.4.3")
 
 bintrayOrganization in bintray := None
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.3")
 
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
 publishMavenStyle := false
-
-scriptedSettings
 
 scriptedLaunchOpts += ("-Dproject.version=" + version.value)
