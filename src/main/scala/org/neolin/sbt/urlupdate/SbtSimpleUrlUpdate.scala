@@ -5,7 +5,7 @@
 package org.neolin.sbt.urlupdate
 
 import sbt._
-import com.typesafe.sbt.web.{PathMapping, SbtWeb}
+import com.typesafe.sbt.web.{Compat, PathMapping, SbtWeb}
 import com.typesafe.sbt.web.pipeline.Pipeline
 import sbt.Keys._
 import sbt.Task
@@ -64,18 +64,19 @@ object SbtSimpleUrlUpdate extends AutoPlugin {
   }
 
   def simpleURLUpdateFiles: Def.Initialize[Task[Pipeline.Stage]] = Def.task {
-    mappings =>
-      val targetDir = webTarget.value / simpleUrlUpdate.key.label
-      val include = (includeFilter in simpleUrlUpdate).value
-      val exclude = (excludeFilter in simpleUrlUpdate).value
+    import sbt.Path._
+    val targetDir = webTarget.value / simpleUrlUpdate.key.label
+    val include = (includeFilter in simpleUrlUpdate).value
+    val exclude = (excludeFilter in simpleUrlUpdate).value
+    val cacheStore = Compat.cacheStore(streams.value, simpleUrlUpdate.key.label)
 
+    (mappings: Seq[PathMapping]) => {
       SbtWeb.syncMappings(
-        streams.value.cacheDirectory / simpleUrlUpdate.key.label,
+        cacheStore,
         mappings,
         targetDir
       )
-
-      val updateMappings = targetDir.***.get.toSet.filter(_.isFile).pair(relativeTo(targetDir))
+      val updateMappings = targetDir.allPaths.get.toSet.filter(_.isFile).pair(relativeTo(targetDir))
 
       for {
         algorithm <- algorithms.value
@@ -84,6 +85,7 @@ object SbtSimpleUrlUpdate extends AutoPlugin {
         IO.write(file, updatePipeline(updateMappings, algorithm)(IO.read(file)))
       }
 
-      targetDir.***.get.toSet.filter(_.isFile).pair(relativeTo(targetDir))
+      targetDir.allPaths.get.toSet.filter(_.isFile).pair(relativeTo(targetDir))
+    }
   }
 }
